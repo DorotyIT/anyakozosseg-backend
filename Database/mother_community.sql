@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2023. Már 07. 19:06
+-- Létrehozás ideje: 2023. Már 15. 14:27
 -- Kiszolgáló verziója: 10.4.27-MariaDB
 -- PHP verzió: 8.2.0
 
@@ -31,14 +31,15 @@ USE `mother_community`;
 
 CREATE TABLE IF NOT EXISTS `brands` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` int(11) NOT NULL,
-  `price_category_id` bigint(20) NOT NULL,
+  `name` varchar(255) NOT NULL,
   `is_cruelty_free` tinyint(1) NOT NULL,
   `is_vegan` tinyint(1) NOT NULL,
   `overall_rating` tinyint(5) NOT NULL,
+  `image_file` longblob NOT NULL,
+  `price_category_id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `price_category_id` (`price_category_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -149,10 +150,19 @@ CREATE TABLE IF NOT EXISTS `ingredient_functions` (
 --
 
 CREATE TABLE IF NOT EXISTS `price_categories` (
-  `id` bigint(20) NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- A tábla adatainak kiíratása `price_categories`
+--
+
+INSERT INTO `price_categories` (`id`, `name`) VALUES
+(1, 'ALACSONY'),
+(2, 'KÖZEPES'),
+(3, 'MAGAS');
 
 -- --------------------------------------------------------
 
@@ -204,7 +214,7 @@ CREATE TABLE IF NOT EXISTS `products_to_product_categories` (
 
 CREATE TABLE IF NOT EXISTS `product_categories` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
+  `product_category_name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -237,7 +247,7 @@ INSERT INTO `users` (`id`, `username`, `password`, `role`) VALUES
 -- Megkötések a táblához `brands`
 --
 ALTER TABLE `brands`
-  ADD CONSTRAINT `brands_ibfk_2` FOREIGN KEY (`price_category_id`) REFERENCES `price_categories` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `brands_ibfk_1` FOREIGN KEY (`price_category_id`) REFERENCES `price_categories` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Megkötések a táblához `categories_to_brands`

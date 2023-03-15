@@ -9,8 +9,8 @@
         $priceCategories = [];
         $i = 0;
         while ($row = mysqli_fetch_assoc($result)) {
-            $priceCategories[$i]['id'] = $row['price_category_id'];
-            $priceCategories[$i]['priceCategoryName'] = $row['price_category_name'];
+            $priceCategories[$i]['id'] = $row['id'];
+            $priceCategories[$i]['name'] = $row['name'];
             $i++;
         }
         echo json_encode($priceCategories);
