@@ -26,7 +26,7 @@
                     } 
                     if (isset($_GET['brandId'])) {
                         $brandId= $_GET['brandId'];
-                        $sqlQuery = "SELECT * FROM `brands` JOIN categories_to_brands ON brands.id=categories_to_brands.brand_id JOIN price_categories_to_brands ON brands.id=price_categories_to_brands.brand_id WHERE brands.id={$brandId}";
+                        $sqlQuery = "SELECT * FROM `brands` JOIN categories_to_brands ON brands.id=categories_to_brands.brand_id WHERE brands.id={$brandId}";
                         $result = mysqli_query($connection, $sqlQuery);
             
                         $rawBrand = mysqli_fetch_assoc($result);
@@ -54,9 +54,8 @@
                     $categoryId = $body['categoryId'];
                     $priceCategoryId = $body['priceCategoryId'];
                     
-                    
-                    $insertIntoBrands = "INSERT INTO `brands` (name, is_cruelty_free, is_vegan, overall_rating, image_file)
-                    VALUES('{$name}', '{$isCrueltyFree}', '{$isVegan}', '{$overallRating}', '{$imageFile}');";
+                    $insertIntoBrands = "INSERT INTO `brands` (name, is_cruelty_free, is_vegan, overall_rating, price_category_id, image_file)
+                    VALUES('{$name}', '{$isCrueltyFree}', '{$isVegan}', '{$overallRating}', '{$priceCategoryId}', '{$imageFile}');";
                     mysqli_query($connection, $insertIntoBrands);
                     
                     $brandId = mysqli_insert_id($connection);
@@ -64,10 +63,6 @@
                     $insertIntoCategoriesToBrands = "INSERT INTO `categories_to_brands` (brand_id, category_id) VALUES('{$brandId}', '{$categoryId}')";
                     
                     mysqli_query($connection, $insertIntoCategoriesToBrands);
-                    
-                    $insertIntoPriceCategoriesToBrands = "INSERT INTO `price_categories_to_brands` (brand_id, price_category_id) VALUES('{$brandId}', '{$priceCategoryId}')";
-                    
-                    mysqli_query($connection, $insertIntoPriceCategoriesToBrands);
 
                     $response['brandId'] = $brandId;
                     echo json_encode($response);
@@ -87,17 +82,12 @@
                     $categoryId = $body['categoryId'];
                     $priceCategoryId = $body['priceCategoryId'];
 
-                    $updateBrands = "UPDATE `brands` SET name = '{$name}', is_cruelty_free = '{$isCrueltyFree}', is_vegan = '{$isVegan}',  overall_rating = '{$overallRating}', image_file = '{$imageFile}' WHERE id = {$id}";
+                    $updateBrands = "UPDATE `brands` SET name = '{$name}', is_cruelty_free = '{$isCrueltyFree}', is_vegan = '{$isVegan}',  overall_rating = '{$overallRating}', price_category_id = '{$priceCategoryId}', image_file = '{$imageFile}' WHERE id = {$id}";
                     mysqli_query($connection, $updateBrands);
         
-                    
                     $updateCategoriesToBrands = "UPDATE `categories_to_brands` SET category_id = '{$categoryId}' WHERE brand_id = {$id}";
                     
                     mysqli_query($connection, $updateCategoriesToBrands);
-                    
-                    $updatePriceCategoriesToBrands = "UPDATE `price_categories_to_brands` SET price_category_id = '{$priceCategoryId}' WHERE brand_id = {$id}";
-                    
-                    mysqli_query($connection, $updatePriceCategoriesToBrands);
 
                     $response['brandId'] = $id;
                     
