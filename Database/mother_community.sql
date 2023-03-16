@@ -21,7 +21,10 @@ CREATE TABLE IF NOT EXISTS `brands` (
   `price_category_id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `price_category_id` (`price_category_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `brands` (`id`, `name`, `is_cruelty_free`, `is_vegan`, `overall_rating`, `image_file`, `price_category_id`) VALUES
+(1, 'ASDF', 0, 0, 0, '', 1);
 
 DROP TABLE IF EXISTS `categories`;
 CREATE TABLE IF NOT EXISTS `categories` (
@@ -45,6 +48,9 @@ CREATE TABLE IF NOT EXISTS `categories_to_brands` (
   KEY `category_id` (`category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+INSERT INTO `categories_to_brands` (`brand_id`, `category_id`) VALUES
+(1, 1);
+
 DROP TABLE IF EXISTS `categories_to_ingredients`;
 CREATE TABLE IF NOT EXISTS `categories_to_ingredients` (
   `ingredient_id` bigint(20) NOT NULL,
@@ -60,6 +66,9 @@ CREATE TABLE IF NOT EXISTS `categories_to_products` (
   KEY `product_id` (`product_id`),
   KEY `category_id` (`category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `categories_to_products` (`product_id`, `category_id`) VALUES
+(0, 1);
 
 DROP TABLE IF EXISTS `ingredients`;
 CREATE TABLE IF NOT EXISTS `ingredients` (
@@ -102,12 +111,15 @@ DROP TABLE IF EXISTS `products`;
 CREATE TABLE IF NOT EXISTS `products` (
   `id` bigint(20) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `price_range_min` varchar(255) NOT NULL,
-  `price_range_max` varchar(255) NOT NULL,
+  `price_range_min` int(255) NOT NULL,
+  `price_range_max` int(255) NOT NULL,
   `packaging` varchar(255) NOT NULL,
   `can_help` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `products` (`id`, `name`, `price_range_min`, `price_range_max`, `packaging`, `can_help`) VALUES
+(0, 'asdf', 500, 2500, '20mg', 'asdf, lakj, salsdkjf');
 
 DROP TABLE IF EXISTS `products_to_ingredients`;
 CREATE TABLE IF NOT EXISTS `products_to_ingredients` (
@@ -139,10 +151,15 @@ CREATE TABLE IF NOT EXISTS `ratings` (
   `product_id` bigint(20) NOT NULL,
   `rating` int(5) NOT NULL,
   `comment` varchar(255) NOT NULL,
+  `added_on` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `product_id` (`product_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `ratings` (`id`, `user_id`, `product_id`, `rating`, `comment`, `added_on`) VALUES
+(1, 1, 0, 5, 'Ez nagyon király', '2023-03-16 16:00:52'),
+(2, 1, 0, 4, 'sdfsdf', '2023-03-16 16:00:52');
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
