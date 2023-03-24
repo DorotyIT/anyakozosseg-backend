@@ -14,7 +14,10 @@
 
                             $categoryId = $_GET['categoryId'];
 
-                            $sqlGetProducts = "SELECT * FROM `products` JOIN categories_to_products ON products.id=categories_to_products.product_id WHERE category_id={$categoryId}";
+                            $sqlGetProducts = "SELECT * 
+                                               FROM `products` 
+                                               JOIN categories_to_products ON products.id=categories_to_products.product_id 
+                                               WHERE category_id={$categoryId}";
                         } 
                         // Fetch products by first letter  
                         elseif (isset($_GET['abcLetter'])) {
@@ -32,11 +35,15 @@
                             $products[$i]['name'] = $row['name'];
                             $products[$i]['imageFile'] =  isset($row['image_file']) ? $row['image_file'] : '';
                             
-                            $sqlAvgOfRatings = "SELECT AVG(rating) FROM `ratings` WHERE product_id={$productId}";
+                            $sqlAvgOfRatings = "SELECT AVG(rating) 
+                                                FROM `ratings` 
+                                                WHERE product_id={$productId}";
                             $avgRatingsResult = mysqli_query($connection, $sqlAvgOfRatings);
                             $products[$i]['avgRating'] = mysqli_fetch_assoc($avgRatingsResult)['AVG(rating)'];
 
-                            $sqlNumberOfRatings = "SELECT COUNT(*) FROM `ratings` WHERE product_id={$productId}";
+                            $sqlNumberOfRatings = "SELECT COUNT(*) 
+                                                   FROM `ratings` 
+                                                   WHERE product_id={$productId}";
                             $numberOfRatingsResult = mysqli_query($connection,  $sqlNumberOfRatings);
                             $products[$i]['numberOfRatings'] = mysqli_fetch_assoc($numberOfRatingsResult)['COUNT(*)'];
 
@@ -60,7 +67,9 @@
 
                     if (isset($_GET['productId'])) {
                         $productId = $_GET['productId'];
-                        $sqlGetProduct = "SELECT * FROM `products` WHERE id={$productId}";
+                        $sqlGetProduct = "SELECT * 
+                                          FROM `products` 
+                                          WHERE id={$productId}";
 
                         $productResult = mysqli_query($connection, $sqlGetProduct);
                         $rawProduct = mysqli_fetch_assoc($productResult);
@@ -78,7 +87,9 @@
                             return;
                         }
 
-                        $sqlNumberOfRatings = "SELECT COUNT(*) FROM `ratings` WHERE product_id={$productId}";
+                        $sqlNumberOfRatings = "SELECT COUNT(*) 
+                                               FROM `ratings` 
+                                               WHERE product_id={$productId}";
                         $numberOfRatingsResult = mysqli_query($connection,  $sqlNumberOfRatings);
                         $product['numberOfRatings'] = mysqli_fetch_assoc($numberOfRatingsResult)['COUNT(*)'];
 
@@ -86,7 +97,11 @@
                         $avgRatingsResult = mysqli_query($connection, $sqlAvgOfRatings);
                         $product['avgRating'] = mysqli_fetch_assoc($avgRatingsResult)['AVG(rating)'];
 
-                        $sqlProductCategories = "SELECT product_categories.product_category_name FROM `products` JOIN products_to_product_categories ON products.id = products_to_product_categories.product_id JOIN product_categories ON product_categories.id = products_to_product_categories.product_category_id  WHERE product_id={$productId}";
+                        $sqlProductCategories = "SELECT product_categories.product_category_name 
+                                                 FROM `products` 
+                                                 JOIN products_to_product_categories ON products.id = products_to_product_categories.product_id 
+                                                 JOIN product_categories ON product_categories.id = products_to_product_categories.product_category_id  
+                                                 WHERE product_id={$productId}";
                         $productCategoriesResult = mysqli_query($connection,  $sqlProductCategories);
                         
                         $product['productCategories'] = [];
@@ -96,7 +111,12 @@
                             $c++;
                         }
 
-                        $sqlRatings = "SELECT *, ratings.id as rating_id FROM `ratings` JOIN users ON ratings.user_id = users.id  WHERE product_id={$productId}";
+                        $sqlRatings = "SELECT *, ratings.id as rating_id 
+                                       FROM `ratings` 
+                                       JOIN users ON ratings.user_id = users.id  
+                                       WHERE product_id={$productId} 
+                                       ORDER BY added_on DESC";
+         
                         $ratingsResult = mysqli_query($connection, $sqlRatings);
 
                         $product['ratings'] = [];
