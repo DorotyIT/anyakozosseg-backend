@@ -9,8 +9,6 @@ VALUES ("ÉTREND-KIEGÉSZÍTŐK");
 
 -- reset id counter
 
-set foreign_key_checks=0;
-truncate table brands;
-set foreign_key_checks=1;
+ALTER TABLE `brands` AUTO_INCREMENT=1;
 
 -- maybe it would be a good idea to reset the seed by deletion to the (deletedId -1) 

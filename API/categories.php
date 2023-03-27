@@ -16,16 +16,4 @@
         }
         echo json_encode($categories);
    }
-
-   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    echo "POST";
-   }
-
-   if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-    echo "PUT";
-   }
-
-   if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-    echo "DELETE";
-   }
 ?>
