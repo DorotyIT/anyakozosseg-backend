@@ -47,10 +47,18 @@
                             $numberOfRatingsResult = mysqli_query($connection,  $sqlNumberOfRatings);
                             $products[$i]['numberOfRatings'] = mysqli_fetch_assoc($numberOfRatingsResult)['COUNT(*)'];
 
-                            $sqlLastRating = "SELECT * FROM `ratings` JOIN users ON ratings.user_id = users.id  WHERE product_id={$productId} ORDER BY added_on DESC LIMIT 1";
+                            $sqlLastRating = "SELECT * 
+                                              FROM `ratings` 
+                                              JOIN users ON ratings.user_id = users.id  
+                                              WHERE product_id={$productId} 
+                                              ORDER BY added_on 
+                                              DESC 
+                                              LIMIT 1";
                             $lastRatingResult = mysqli_query($connection, $sqlLastRating);
                     
                             $lastRating =  mysqli_fetch_assoc($lastRatingResult);
+                            $products[$i]['lastRating'] = null;
+                            
                             if($lastRating !== NULL) {
                                 $products[$i]['lastRating']['id'] = $lastRating['id'];
                                 $products[$i]['lastRating']['username'] = $lastRating['username'];
@@ -78,8 +86,8 @@
                             $product['id'] = $rawProduct['id'];
                             $product['name'] = $rawProduct['name'];
                             $product['imageFile'] =  isset($rawProduct['image_file']) ? $rawProduct['image_file'] : '';
-                            $product['priceRangeMin'] = $rawProduct['price_range_min'];
-                            $product['priceRangeMax'] = $rawProduct['price_range_max'];
+                            $product['priceRange']['min'] = $rawProduct['price_range_min'];
+                            $product['priceRange']['max'] = $rawProduct['price_range_max'];
                             $product['canHelp'] = $rawProduct['can_help'];
                             $product['packaging'] = $rawProduct['packaging'];
                         } else {
@@ -97,7 +105,7 @@
                         $avgRatingsResult = mysqli_query($connection, $sqlAvgOfRatings);
                         $product['avgRating'] = mysqli_fetch_assoc($avgRatingsResult)['AVG(rating)'];
 
-                        $sqlProductCategories = "SELECT product_categories.product_category_name 
+                        $sqlProductCategories = "SELECT product_categories.name 
                                                  FROM `products` 
                                                  JOIN products_to_product_categories ON products.id = products_to_product_categories.product_id 
                                                  JOIN product_categories ON product_categories.id = products_to_product_categories.product_category_id  
@@ -107,7 +115,7 @@
                         $product['productCategories'] = [];
                         $c = 0;
                         while($productCategory = mysqli_fetch_assoc($productCategoriesResult)) {
-                            $product['productCategories'][$c] = $productCategory['product_category_name'];
+                            $product['productCategories'][$c] = $productCategory['name'];
                             $c++;
                         }
 
@@ -134,6 +142,38 @@
 
                         echo json_encode($product);
                     }
+                }
+                break;
+
+                case 'POST' : 
+                    {
+
+                    $body = json_decode(file_get_contents('php://input'), true);
+
+                    $name = $body['name'];
+                    $categoryId = $body['categoryId'];
+                    $brandId = $body['brandId'];
+                    $imageFile = isset($body['imageFile']) ? $body['imageFile'] : '';
+                    $priceRangeMin = $body['priceRange']['min'];
+                    $priceRangeMax = $body['priceRange']['max'];
+                    $canHelp = $body['canHelp'];
+                    $packaging = $body['packaging'];
+
+                    $sqlAddNewProduct = "INSERT 
+                                         INTO `products` (name, brand_id, image_file, price_range_min, price_range_max, can_help, packaging)
+                                         VALUES ('{$name}', '{$brandId}', '{$imageFile}', '{$priceRangeMin}', '{$priceRangeMax}', '{$canHelp}', '{$packaging}')";
+                   
+                    mysqli_query($connection, $sqlAddNewProduct);
+
+                    $productId =  mysqli_insert_id($connection);
+
+                    $sqlCategoriesToProductInsert = "INSERT 
+                                                     INTO `categories_to_products` (category_id, product_id)
+                                                     VALUES ('{$categoryId}', '{$productId}')";
+                    mysqli_query($connection, $sqlCategoriesToProductInsert);
+
+                    $response['productId'] = $productId;
+                    echo json_encode($response);
                 }
                 break;
         }

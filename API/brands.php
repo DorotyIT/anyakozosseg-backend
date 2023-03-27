@@ -28,7 +28,7 @@
                         }
                         echo json_encode($brands);
                     } 
-                    if (isset($_GET['brandId'])) {
+                    elseif (isset($_GET['brandId'])) {
                         $brandId= $_GET['brandId'];
                         $sqlQuery = "SELECT * 
                                      FROM `brands` 
@@ -45,6 +45,18 @@
                         $brand['overallRating'] = $rawBrand['overall_rating'];
                         $brand['imageFile'] = isset($rawBrand['image_file']) ? $rawBrand['image_file'] : '';
                         echo json_encode($brand);
+                    } else {
+                        $sqlQuery = "SELECT id, name 
+                                     FROM `brands`";
+                        $result = mysqli_query($connection, $sqlQuery);
+                        
+                        if (mysqli_num_rows($result) > 0) {
+                            $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
+                            echo json_encode($rows);
+                        } else {
+                            echo "0 results";
+                        }
+                        
                     }
                 }
                 break;
