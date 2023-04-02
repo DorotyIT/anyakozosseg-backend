@@ -54,7 +54,7 @@
                             $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
                             echo json_encode($rows);
                         } else {
-                            echo "0 results";
+                            echo json_encode([]);
                         }
                         
                     }

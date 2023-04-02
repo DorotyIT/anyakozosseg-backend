@@ -7,7 +7,7 @@
        {
             case 'GET' : 
                 {
-                    $sqlGetProductCategories = "SELECT * FROM `product_categories`";         
+                    $sqlGetProductCategories = "SELECT * FROM `subcategories`";         
                     $result= mysqli_query($connection, $sqlGetProductCategories);
                     
                     if (mysqli_num_rows($result) > 0) {
