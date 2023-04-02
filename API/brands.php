@@ -9,6 +9,20 @@
        {
             case 'GET' : 
                 {
+                    // GET without params
+                    if (empty($_REQUEST)) {
+                        $sqlQuery = "SELECT id, name 
+                        FROM `brands`";
+                        $result = mysqli_query($connection, $sqlQuery);
+
+                        if (mysqli_num_rows($result) > 0) {
+                            $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
+                            echo json_encode($rows);
+                        } else {
+                            echo json_encode([]);
+                        }
+                    }
+
                     if (isset($_GET['categoryId']) && isset($_GET['abcLetter'])) {
                         $abcLetter = $_GET['abcLetter'];
                         $categoryId = $_GET['categoryId'];
@@ -27,8 +41,7 @@
                             $i++;
                         }
                         echo json_encode($brands);
-                    } 
-                    elseif (isset($_GET['brandId'])) {
+                    } elseif (isset($_GET['brandId'])) {
                         $brandId= $_GET['brandId'];
                         $sqlQuery = "SELECT * 
                                      FROM `brands` 
@@ -42,21 +55,27 @@
                         $brand['priceCategoryId'] = $rawBrand['price_category_id'];
                         $brand['isCrueltyFree'] = (bool)$rawBrand['is_cruelty_free'];
                         $brand['isVegan'] = (bool)$rawBrand['is_vegan'];
-                        $brand['overallRating'] = $rawBrand['overall_rating'];
                         $brand['imageFile'] = isset($rawBrand['image_file']) ? $rawBrand['image_file'] : '';
+
+                        // Fetch the overall rating
+                        $sqlAvgOfRatings = "SELECT AVG(rating) 
+                                            FROM `ratings` 
+                                            JOIN products ON ratings.product_id=products.id 
+                                            JOIN brands ON products.brand_id=brands.id 
+                                            WHERE brands.id={$brandId}";
+                        $avgRatingsResult = mysqli_query($connection, $sqlAvgOfRatings);
+                        $brand['overallRating'] = mysqli_fetch_assoc($avgRatingsResult)['AVG(rating)'];
+
+                         // Fetch the number of ratings for the brand
+                        $sqlNumOfRatings = "SELECT COUNT(ratings.id)
+                                            FROM `ratings` 
+                                            JOIN products ON ratings.product_id=products.id 
+                                            JOIN brands ON products.brand_id=brands.id 
+                                            WHERE brands.id={$brandId}";
+                        $sqlNumOfRatings = mysqli_query($connection, $sqlNumOfRatings);
+                        $brand['numberOfRatings'] = mysqli_fetch_assoc($sqlNumOfRatings)['COUNT(ratings.id)'];
+                        
                         echo json_encode($brand);
-                    } else {
-                        $sqlQuery = "SELECT id, name 
-                                     FROM `brands`";
-                        $result = mysqli_query($connection, $sqlQuery);
-                        
-                        if (mysqli_num_rows($result) > 0) {
-                            $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
-                            echo json_encode($rows);
-                        } else {
-                            echo json_encode([]);
-                        }
-                        
                     }
                 }
                 break;
