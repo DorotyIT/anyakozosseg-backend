@@ -247,7 +247,26 @@
                         echo json_encode($response);
                     }
                     break;
-                
+
+               case 'DELETE':
+                    $response = [];
+                    if (isset($_GET['productId'])) {
+                        $productId = $_GET['productId'];
+                        $sqlDeleteProduct = "DELETE FROM `products` WHERE id={$productId}";
+                        $deleteResult = mysqli_query($connection, $sqlDeleteProduct);
+                    
+                        if ($deleteResult) {
+                            $response['success'] = true;
+                        } else {
+                            $response['success'] = false;
+                            $response['message'] = 'Failed to delete product';
+                        }
+                    } else {
+                        $response['success'] = false;
+                        $response['message'] = 'productId parameter is missing';
+                    }
+                    echo json_encode($response);
+                    break;
         }
     }
 ?>
