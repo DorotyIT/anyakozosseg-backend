@@ -9,30 +9,31 @@
        {
             case 'GET' : 
                 {
-                    // GET without params
-                    if (empty($_REQUEST)) {
-                        $sqlQuery = "SELECT id, name 
-                        FROM `brands`";
-                        $result = mysqli_query($connection, $sqlQuery);
+                    if(!isset($_GET['brandId'])) {
 
-                        if (mysqli_num_rows($result) > 0) {
-                            $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
-                            echo json_encode($rows);
-                        } else {
-                            echo json_encode([]);
+                        // GET all brands for populating options
+                        if (empty($_REQUEST)) {
+                            $sqlQuery = "SELECT id, name 
+                                         FROM `brands`";
+
+                        // GET brands by category
+                        } elseif (isset($_GET['categoryId'])) {
+                            $categoryId = $_GET['categoryId'];
+                            $sqlQuery = "SELECT * 
+                                         FROM `brands` 
+                                         JOIN categories_to_brands ON brands.id=categories_to_brands.brand_id 
+                                         WHERE category_id={$categoryId}";
+
+                        // GET brands by first letter of brand-name
+                        } elseif (isset($_GET['abcLetter'])) {
+                            $abcLetter = $_GET['abcLetter'];
+                            $sqlQuery = "SELECT * 
+                                         FROM `brands` 
+                                         WHERE brands.name LIKE '{$abcLetter}%'";
                         }
-                    }
 
-                    if (isset($_GET['categoryId']) && isset($_GET['abcLetter'])) {
-                        $abcLetter = $_GET['abcLetter'];
-                        $categoryId = $_GET['categoryId'];
-                        $sqlQuery = "SELECT * 
-                                     FROM `brands` 
-                                     JOIN categories_to_brands ON brands.id=categories_to_brands.brand_id 
-                                     WHERE category_id={$categoryId} 
-                                     AND brands.name LIKE '{$abcLetter}%'";
                         $result = mysqli_query($connection, $sqlQuery);
-                    
+                        
                         $brands = [];
                         $i = 0;
                         while ($row = mysqli_fetch_assoc($result)) {
@@ -40,8 +41,11 @@
                             $brands[$i]['name'] = $row['name'];
                             $i++;
                         }
+
                         echo json_encode($brands);
-                    } elseif (isset($_GET['brandId'])) {
+
+                    // GET brand by id
+                    } else {
                         $brandId= $_GET['brandId'];
                         $sqlQuery = "SELECT * 
                                      FROM `brands` 
