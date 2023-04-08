@@ -102,8 +102,8 @@
                     $body = json_decode(file_get_contents('php://input'), true);
                     
                     $name = $body['name'];
-                    $isCrueltyFree = (int)$body['isCrueltyFree'];
-                    $isVegan = (int)$body['isVegan'];
+                    $isCrueltyFree = $body['isCrueltyFree']['id'];
+                    $isVegan = $body['isVegan']['id'];
                     $overallRating = $body['overallRating'];
                     $imageFile = isset($body['imageFile']) ? $body['imageFile'] : '';
                     $categoryId = $body['category']['id'];
@@ -133,8 +133,8 @@
                     
                     $id = $body['id'];
                     $name = $body['name'];
-                    $isCrueltyFree = (int)$body['isCrueltyFree'];
-                    $isVegan = (int)$body['isVegan'];
+                    $isCrueltyFree = $body['isCrueltyFree']['id'];
+                    $isVegan = $body['isVegan']['id'];
                     $overallRating = $body['overallRating'];
                     $imageFile = isset($body['imageFile']) ? $body['imageFile'] : '';
                     $categoryId = $body['category']['id'];
