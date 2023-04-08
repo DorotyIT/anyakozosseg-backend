@@ -1,8 +1,12 @@
 <?php
     require("../connection.php");
 
-     $request_vars = array();
+    function getOptionFromBoolean(bool $isTrue): array {
+        return ['id' => $isTrue ? 1 : 0, 'name' => $isTrue];
+    }
 
+     $request_vars = array();
+ 
      if (isset($_SERVER['REQUEST_METHOD']))
      {
        switch ($_SERVER['REQUEST_METHOD'])
@@ -19,7 +23,7 @@
                         // GET brands by category
                         } elseif (isset($_GET['categoryId'])) {
                             $categoryId = $_GET['categoryId'];
-                            $sqlQuery = "SELECT * 
+                            $sqlQuery = "SELECT id, name
                                          FROM `brands` 
                                          JOIN categories_to_brands ON brands.id=categories_to_brands.brand_id 
                                          WHERE category_id={$categoryId}";
@@ -27,40 +31,49 @@
                         // GET brands by first letter of brand-name
                         } elseif (isset($_GET['abcLetter'])) {
                             $abcLetter = $_GET['abcLetter'];
-                            $sqlQuery = "SELECT * 
+                            $sqlQuery = "SELECT id, name
                                          FROM `brands` 
                                          WHERE brands.name LIKE '{$abcLetter}%'";
                         }
 
                         $result = mysqli_query($connection, $sqlQuery);
-                        
-                        $brands = [];
-                        $i = 0;
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            $brands[$i]['id'] = $row['id'];
-                            $brands[$i]['name'] = $row['name'];
-                            $i++;
-                        }
+                        $brands = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
                         echo json_encode($brands);
 
                     // GET brand by id
                     } else {
                         $brandId= $_GET['brandId'];
-                        $sqlQuery = "SELECT * 
-                                     FROM `brands` 
-                                     JOIN categories_to_brands ON brands.id=categories_to_brands.brand_id 
+                        $sqlQuery = "SELECT *, brands.id AS brand_id, brands.name AS brand_name, price_categories.name AS price_category_name
+                                     FROM `brands`
+                                     JOIN price_categories ON price_categories.id = brands.price_category_id
                                      WHERE brands.id={$brandId}";
                         $result = mysqli_query($connection, $sqlQuery);
             
                         $rawBrand = mysqli_fetch_assoc($result);
-                        $brand['id'] = $rawBrand['id'];
-                        $brand['name'] = $rawBrand['name'];
-                        $brand['priceCategoryId'] = $rawBrand['price_category_id'];
-                        $brand['isCrueltyFree'] = (bool)$rawBrand['is_cruelty_free'];
-                        $brand['isVegan'] = (bool)$rawBrand['is_vegan'];
+                        $brand['id'] = $rawBrand['brand_id'];
+                        $brand['name'] = $rawBrand['brand_name'];
+                        $isCrueltyFree = (bool)$rawBrand['is_cruelty_free'];
+                        $brand['isCrueltyFree'] = getOptionFromBoolean($isCrueltyFree);
+                        $isVegan = (bool)$rawBrand['is_vegan'];
+                        $brand['isVegan'] = getOptionFromBoolean($isVegan);
                         $brand['imageFile'] = isset($rawBrand['image_file']) ? $rawBrand['image_file'] : '';
+                        $brand['priceCategory'] = array('id' => $rawBrand['price_category_id'], 'name' => $rawBrand['price_category_name']);
 
+                        // Fetch category
+                        $sqlGetCategory = "SELECT categories.name AS category_name, categories.id AS category_id
+                                           FROM categories_to_brands 
+                                           JOIN categories ON categories.id = categories_to_brands.category_id
+                                           WHERE categories_to_brands.brand_id={$brandId}";
+                        $categoryResult = mysqli_query($connection, $sqlGetCategory);
+                        $category = mysqli_fetch_assoc($categoryResult);
+                        $brand['category'] = array('id' => $category['category_id'], 'name' => $category['category_name']);
+                        
+                        
+  
+               
+
+                        
                         // Fetch the overall rating
                         $sqlAvgOfRatings = "SELECT AVG(rating) 
                                             FROM `ratings` 
@@ -93,8 +106,8 @@
                     $isVegan = (int)$body['isVegan'];
                     $overallRating = $body['overallRating'];
                     $imageFile = isset($body['imageFile']) ? $body['imageFile'] : '';
-                    $categoryId = $body['categoryId'];
-                    $priceCategoryId = $body['priceCategoryId'];
+                    $categoryId = $body['category']['id'];
+                    $priceCategoryId = $body['priceCategory']['id'];
                     
                     $insertIntoBrands = "INSERT 
                                          INTO `brands`(name, is_cruelty_free, is_vegan, overall_rating, price_category_id, image_file)
@@ -124,8 +137,8 @@
                     $isVegan = (int)$body['isVegan'];
                     $overallRating = $body['overallRating'];
                     $imageFile = isset($body['imageFile']) ? $body['imageFile'] : '';
-                    $categoryId = $body['categoryId'];
-                    $priceCategoryId = $body['priceCategoryId'];
+                    $categoryId = $body['category']['id'];
+                    $priceCategoryId = $body['priceCategory']['id'];
 
                     $updateBrands = "UPDATE `brands` 
                                      SET name = '{$name}', 
@@ -163,6 +176,7 @@
                 break;
         }
     }
+    
 ?>
 
-    
+
