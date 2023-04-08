@@ -89,21 +89,20 @@
                             $product['canHelp'] = $rawProduct['can_help'];
                             $product['packaging'] = $rawProduct['packaging'];
                         
-                            // Get brand name
+                            // Get brand
                             $brandId = $rawProduct['brand_id'];
-                            $sqlGetBrandName = "SELECT name FROM `brands` WHERE id={$brandId}";
+                            $sqlGetBrandName = "SELECT id, name FROM `brands` WHERE id={$brandId}";
                             $brandResult = mysqli_query($connection, $sqlGetBrandName);
-                            $brand = mysqli_fetch_assoc($brandResult);
-                            $product['brandName'] = $brand['name'];
+                            $product['brand'] = mysqli_fetch_assoc($brandResult);
                             
-                            // Get category name
-                            $sqlGetCategoryName = "SELECT categories.name AS category_name
+                            // Get category
+                            $sqlGetCategory = "SELECT categories.name AS category_name, categories.id AS category_id
                                                    FROM categories_to_products 
                                                    JOIN categories ON categories.id = categories_to_products.category_id
                                                    WHERE categories_to_products.product_id={$productId}";
-                            $categoryResult = mysqli_query($connection, $sqlGetCategoryName);
+                            $categoryResult = mysqli_query($connection, $sqlGetCategory);
                             $category = mysqli_fetch_assoc($categoryResult);
-                            $product['categoryName'] = $category['category_name'];
+                            $product['category'] = array('id' => $category['category_id'], 'name' => $category['category_name']);
                             
                             // Fetch the number of ratings
                             $sqlNumberOfRatings = "SELECT COUNT(*) 
@@ -118,19 +117,14 @@
                             $product['avgRating'] = mysqli_fetch_assoc($avgRatingsResult)['AVG(rating)'];
                             
                             // Fetch subcategories
-                            $sqlSubcategories = "SELECT subcategories.name 
+                            $sqlSubcategories = "SELECT subcategories.id, subcategories.name 
                                                  FROM `products` 
                                                  JOIN products_to_subcategories ON products_to_subcategories.product_id=products.id 
                                                  JOIN subcategories ON subcategories.id=products_to_subcategories.subcategory_id
                                                  WHERE product_id={$productId}";
-                            $subcategoriesResult = mysqli_query($connection, $sqlSubcategories);
-                            
-                            $product['subcategories'] = [];
-                            $c = 0;
-                            while($productCategory = mysqli_fetch_assoc($subcategoriesResult)) {
-                                $product['subcategories'][$c] = $productCategory['name'];
-                                $c++;
-                            }
+                            $subcategoriesResult = mysqli_query($connection, $sqlSubcategories);       
+                            $product['subcategories'] = mysqli_fetch_all($subcategoriesResult, MYSQLI_ASSOC);
+
                             // Fetch ratings
                             $sqlRatings = "SELECT *, ratings.id as rating_id 
                                            FROM `ratings` 
@@ -163,8 +157,8 @@
                         $body = json_decode(file_get_contents('php://input'), true);
                     
                         $name = $body['name'];
-                        $categoryId = $body['categoryId'];
-                        $brandId = $body['brandId'];
+                        $categoryId = $body['category']['id'];
+                        $brandId = $body['brand']['id'];
                         $imageFile = isset($body['imageFile']) ? $body['imageFile'] : '';
                         $priceRangeMin = $body['priceRange']['min'];
                         $priceRangeMax = $body['priceRange']['max'];
@@ -204,14 +198,13 @@
                     
                         $productId = $body['id'];
                         $name = $body['name'];
-                        $categoryId = $body['categoryId'];
-                        $brandId = $body['brandId'];
+                        $categoryId = $body['category']['id'];
+                        $brandId = $body['brand']['id'];
                         $imageFile = $body['imageFile'];
                         $priceRangeMin = $body['priceRange']['min'];
                         $priceRangeMax = $body['priceRange']['max'];
                         $canHelp = $body['canHelp'];
                         $packaging = $body['packaging'];
-                        $subcategories = $body['subcategories'];
                     
                         $sqlUpdateProduct = "UPDATE `products`
                                              SET name='{$name}', brand_id='{$brandId}', image_file='{$imageFile}',
@@ -219,6 +212,7 @@
                                                  can_help='{$canHelp}', packaging='{$packaging}'
                                              WHERE id='{$productId}'";
                     
+                        // Update (DELETE, INSERT) categories
                         mysqli_query($connection, $sqlUpdateProduct);
                     
                         $sqlCategoriesToProductDelete = "DELETE FROM `categories_to_products`
@@ -229,10 +223,13 @@
                                                          VALUES ('{$categoryId}', '{$productId}')";
                         mysqli_query($connection, $sqlCategoriesToProductInsert);
                     
+
+                        // Update (DELETE, INSERT) subcategories
                         $sqlDeleteSubcategories = "DELETE FROM `products_to_subcategories`
                                                    WHERE product_id='{$productId}'";
                         mysqli_query($connection, $sqlDeleteSubcategories);
                     
+                        $subcategories = $body['subcategories'];
                         foreach ($subcategories as $subcategory) {
                             $subcategoryId = $subcategory['id'];
                             $subcategoryName = $subcategory['name'];
