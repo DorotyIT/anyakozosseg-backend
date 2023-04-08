@@ -69,11 +69,6 @@
                         $category = mysqli_fetch_assoc($categoryResult);
                         $brand['category'] = array('id' => $category['category_id'], 'name' => $category['category_name']);
                         
-                        
-  
-               
-
-                        
                         // Fetch the overall rating
                         $sqlAvgOfRatings = "SELECT AVG(rating) 
                                             FROM `ratings` 
