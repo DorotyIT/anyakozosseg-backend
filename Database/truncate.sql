@@ -9,7 +9,6 @@ TRUNCATE TABLE categories_to_ingredients;
 TRUNCATE TABLE categories_to_products;
 TRUNCATE TABLE ingredients;
 TRUNCATE TABLE ingredients_to_ingredient_functions;
-TRUNCATE TABLE ingredient_functions;
 TRUNCATE TABLE products;
 TRUNCATE TABLE products_to_ingredients;
 TRUNCATE TABLE products_to_subcategories;
