@@ -125,6 +125,15 @@
                             $subcategoriesResult = mysqli_query($connection, $sqlSubcategories);       
                             $product['subcategories'] = mysqli_fetch_all($subcategoriesResult, MYSQLI_ASSOC);
 
+                            // Fetch ingredients
+                            $sqlIngredients = "SELECT ingredients.id, ingredients.name 
+                                                 FROM `products` 
+                                                 JOIN products_to_ingredients ON products_to_ingredients.product_id=products.id 
+                                                 JOIN ingredients ON ingredients.id=products_to_ingredients.ingredient_id
+                                                 WHERE product_id={$productId}";
+                            $ingredientsResult = mysqli_query($connection, $sqlIngredients);       
+                            $product['ingredients'] = mysqli_fetch_all($ingredientsResult, MYSQLI_ASSOC);
+
                             // Fetch ratings
                             $sqlRatings = "SELECT *, ratings.id as rating_id 
                                            FROM `ratings` 
@@ -157,36 +166,49 @@
                         $body = json_decode(file_get_contents('php://input'), true);
                     
                         $name = $body['name'];
-                        $categoryId = $body['category']['id'];
                         $brandId = $body['brand']['id'];
                         $imageFile = isset($body['imageFile']) ? $body['imageFile'] : '';
                         $priceRangeMin = $body['priceRange']['min'];
                         $priceRangeMax = $body['priceRange']['max'];
                         $canHelp = $body['canHelp'];
                         $packaging = $body['packaging'];
-                        $subcategories = $body['subcategories'];
-                    
+
                         $sqlAddNewProduct = "INSERT INTO `products` (name, brand_id, image_file, price_range_min, price_range_max, can_help, packaging)
                                              VALUES ('{$name}', '{$brandId}', '{$imageFile}', '{$priceRangeMin}', '{$priceRangeMax}', '{$canHelp}', '{$packaging}')";
                     
                         mysqli_query($connection, $sqlAddNewProduct);
                     
                         $productId =  mysqli_insert_id($connection);
+                        
+                        // Insert category
+                        $categoryId = $body['category']['id'];
 
                         $sqlCategoriesToProductInsert = "INSERT INTO `categories_to_products` (category_id, product_id)
                                                          VALUES ('{$categoryId}', '{$productId}')";
                     
                         mysqli_query($connection, $sqlCategoriesToProductInsert);
                     
+                        // Insert subcategories
+                        $subcategories = $body['subcategories'];
                         foreach ($subcategories as $subcategory) {
                             $subcategoryId = $subcategory['id'];
-                            $subcategoryName = $subcategory['name'];
 
-                            $sqlSubcategoriesToProductInsert = "INSERT INTO `products_to_subcategories` (`subcategory_id`, `product_id`) 
+                            $sqlProductsToSubcategoriesInsert = "INSERT INTO `products_to_subcategories` (`subcategory_id`, `product_id`) 
                                                                 VALUES ('{$subcategoryId}', '{$productId}')";
-                            mysqli_query($connection, $sqlSubcategoriesToProductInsert);
-                        }
-                    
+                            mysqli_query($connection, $sqlProductsToSubcategoriesInsert);
+                        }  
+
+                        // Insert ingredients
+                        $ingredients = $body['ingredients'];
+
+                        foreach ($ingredients as $ingredient) {
+                            $ingredientId = $ingredient['id'];
+
+                            $sqlSProductsToIngredientsInsert = "INSERT INTO `products_to_ingredients` (`ingredient_id`, `product_id`) 
+                                                                VALUES ('{$ingredientId}', '{$productId}')";
+                            mysqli_query($connection, $sqlSProductsToIngredientsInsert);
+                        }  
+
                         $response['productId'] = $productId;
                         echo json_encode($response);
                     }
@@ -232,12 +254,25 @@
                         $subcategories = $body['subcategories'];
                         foreach ($subcategories as $subcategory) {
                             $subcategoryId = $subcategory['id'];
-                            $subcategoryName = $subcategory['name'];
 
-                            $sqlSubcategoriesToProductInsert = "INSERT INTO `products_to_subcategories` (`subcategory_id`, `product_id`) 
+                            $sqlProductsToSubcategoriesInsert = "INSERT INTO `products_to_subcategories` (`subcategory_id`, `product_id`) 
                                                                 VALUES ('{$subcategoryId}', '{$productId}')";
-                            mysqli_query($connection, $sqlSubcategoriesToProductInsert);
+                            mysqli_query($connection, $sqlProductsToSubcategoriesInsert);
                         }
+
+                        // Update (DELETE, INSERT) ingredients
+                        $sqlDeleteIngredients = "DELETE FROM `products_to_ingredients`
+                        WHERE product_id='{$productId}'";
+                        mysqli_query($connection, $sqlDeleteIngredients);
+                        
+                        $ingredients = $body['ingredients'];
+                        foreach ($ingredients as $ingredient) {
+                            $ingredientId = $ingredient['id'];
+
+                            $sqlSProductsToIngredientsInsert = "INSERT INTO `products_to_ingredients` (`ingredient_id`, `product_id`) 
+                                                                VALUES ('{$ingredientId}', '{$productId}')";
+                            mysqli_query($connection, $sqlSProductsToIngredientsInsert);
+                        }  
                     
                         $response['productId'] = $productId;
                         $response['message'] = "Product updated successfully.";
