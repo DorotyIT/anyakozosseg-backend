@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2023. Ápr 13. 18:00
+-- Létrehozás ideje: 2023. Ápr 13. 18:22
 -- Kiszolgáló verziója: 10.4.27-MariaDB
 -- PHP verzió: 8.2.0
 
@@ -39,15 +39,7 @@ CREATE TABLE IF NOT EXISTS `brands` (
   `price_category_id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `price_category_id` (`price_category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- A tábla adatainak kiíratása `brands`
---
-
-INSERT INTO `brands` (`id`, `name`, `is_cruelty_free`, `is_vegan`, `overall_rating`, `image_file`, `price_category_id`) VALUES
-(24, 'Av', 0, 0, 0, '', 1),
-(25, 'asdf', 0, 0, 0, '', 1);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
