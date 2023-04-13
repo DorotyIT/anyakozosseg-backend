@@ -13,6 +13,7 @@ TRUNCATE TABLE products;
 TRUNCATE TABLE products_to_ingredients;
 TRUNCATE TABLE products_to_subcategories;
 TRUNCATE TABLE ratings;
+TRUNCATE TABLE brands;
 
 -- Aktiváljuk a foreign key constraint-eket
 SET FOREIGN_KEY_CHECKS=1;

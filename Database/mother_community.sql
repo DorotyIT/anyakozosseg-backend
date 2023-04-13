@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2023. Ápr 09. 20:39
+-- Létrehozás ideje: 2023. Ápr 13. 18:22
 -- Kiszolgáló verziója: 10.4.27-MariaDB
 -- PHP verzió: 8.2.0
 
@@ -39,19 +39,7 @@ CREATE TABLE IF NOT EXISTS `brands` (
   `price_category_id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `price_category_id` (`price_category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- A tábla adatainak kiíratása `brands`
---
-
-INSERT INTO `brands` (`id`, `name`, `is_cruelty_free`, `is_vegan`, `overall_rating`, `image_file`, `price_category_id`) VALUES
-(16, 'AVON', 0, 1, 0, '', 1),
-(17, 'ABC', 1, 0, 0, '', 1),
-(18, 'A BIO BIGYO', 0, 0, 0, '', 2),
-(21, 'asdf', 0, 0, 0, '', 1),
-(22, 'aaaasss', 1, 1, 0, '', 1),
-(23, 'assssdaa', 1, 0, 0, '', 1);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -71,10 +59,10 @@ CREATE TABLE IF NOT EXISTS `categories` (
 --
 
 INSERT INTO `categories` (`id`, `name`, `image_path`) VALUES
-(1, 'SZÉPSÉGÁPOLÁS', 'assets/card_szepsegapolas.jpg'),
-(2, 'HÁZTARTÁS', 'assets/card_haztartas.jpg'),
-(3, 'BIO TERMÉKEK', 'assets/card_bio_termekek.jpg'),
-(4, 'ÉTREND-KIEGÉSZÍTŐK', 'assets/card_etrend_kiegeszitok.jpg');
+(1, 'SZÉPSÉGÁPOLÁS', 'assets/img/categories/card_szepsegapolas.jpg'),
+(2, 'HÁZTARTÁS', 'assets/img/categories/card_haztartas.jpg'),
+(3, 'BIO TERMÉKEK', 'assets/img/categories/card_bio_termekek.jpg'),
+(4, 'ÉTREND-KIEGÉSZÍTŐK', 'assets/img/categories/card_etrend_kiegeszitok.jpg');
 
 -- --------------------------------------------------------
 
