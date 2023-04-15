@@ -165,7 +165,7 @@
                     {
                         $body = json_decode(file_get_contents('php://input'), true);
                     
-                        $name = $body['name'];
+                        $name = mysqli_real_escape_string($connection, $body['name']);
                         $brandId = $body['brand']['id'];
                         $imageFile = isset($body['imageFile']) ? $body['imageFile'] : '';
                         $priceRangeMin = $body['priceRange']['min'];
@@ -219,7 +219,7 @@
                         $body = json_decode(file_get_contents('php://input'), true);
                     
                         $productId = $body['id'];
-                        $name = $body['name'];
+                        $name = mysqli_real_escape_string($connection, $body['name']);
                         $categoryId = $body['category']['id'];
                         $brandId = $body['brand']['id'];
                         $imageFile = $body['imageFile'];

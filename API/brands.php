@@ -96,7 +96,7 @@
                 {
                     $body = json_decode(file_get_contents('php://input'), true);
                     
-                    $name = $body['name'];
+                    $name = mysqli_real_escape_string($connection, $body['name']);
                     $isCrueltyFree = $body['isCrueltyFree']['id'];
                     $isVegan = $body['isVegan']['id'];
                     $overallRating = $body['overallRating'];
@@ -127,7 +127,7 @@
                     $body = json_decode(file_get_contents('php://input'), true);
                     
                     $id = $body['id'];
-                    $name = $body['name'];
+                    $name = mysqli_real_escape_string($connection, $body['name']);
                     $isCrueltyFree = $body['isCrueltyFree']['id'];
                     $isVegan = $body['isVegan']['id'];
                     $overallRating = $body['overallRating'];

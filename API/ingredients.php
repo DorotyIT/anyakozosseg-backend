@@ -137,7 +137,7 @@
                 {
                     $body = json_decode(file_get_contents('php://input'), true);
                 
-                    $name = $body['name'];
+                    $name = mysqli_real_escape_string($connection, $body['name']);
                     $ewgRisk = $body['ewgRisk'];
                     $comedogenIndex = $body['comedogenIndex'];
                     $irritationIndex = $body['irritationIndex'];
@@ -182,7 +182,7 @@
                     $body = json_decode(file_get_contents('php://input'), true);
                     $ingredientId = $body['id'];
                 
-                    $name = $body['name'];
+                    $name = mysqli_real_escape_string($connection, $body['name']);
                     $ewgRisk = $body['ewgRisk'];
                     $comedogenIndex = $body['comedogenIndex'];
                     $irritationIndex = $body['irritationIndex'];
