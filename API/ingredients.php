@@ -1,6 +1,7 @@
 <?php
     require("../connection.php");
-
+    require("auth.php");
+    
     function getOptionFromBoolean(bool $isTrue): array {
         return ['id' => $isTrue ? 1 : 0, 'name' => $isTrue];
     }
@@ -134,10 +135,10 @@
                 break;
                 
             case 'POST': 
-                {
+                doIfHasAdminRole(function() use ($connection) {
                     $body = json_decode(file_get_contents('php://input'), true);
                 
-                    $name = mysqli_real_escape_string($connection, $body['name']);
+                    $name = $body['name'];
                     $ewgRisk = $body['ewgRisk'];
                     $comedogenIndex = $body['comedogenIndex'];
                     $irritationIndex = $body['irritationIndex'];
@@ -173,16 +174,16 @@
                 
                     $response['ingredientId'] = $ingredientId;
                     echo json_encode($response);
-                }
+                });
                 break;
                     
 
             case 'PUT': 
-                {
+                doIfHasAdminRole(function() use ($connection) {
                     $body = json_decode(file_get_contents('php://input'), true);
                     $ingredientId = $body['id'];
                 
-                    $name = mysqli_real_escape_string($connection, $body['name']);
+                    $name = $body['name'];
                     $ewgRisk = $body['ewgRisk'];
                     $comedogenIndex = $body['comedogenIndex'];
                     $irritationIndex = $body['irritationIndex'];
@@ -224,11 +225,12 @@
                 
                     $response['ingredientId'] = $ingredientId;
                     echo json_encode($response);
-                }
+                });
                 break;
                     
             case 'DELETE':
-                if (isset($_GET['ingredientId'])) {
+                doIfHasAdminRole(function() use ($connection) {
+                    if (isset($_GET['ingredientId'])) {
                     $ingredientId = $_GET['ingredientId'];
                     $deleteingredient = "DELETE 
                                          FROM `ingredients` 
@@ -237,7 +239,7 @@
                     mysqli_query($connection, $deleteingredient);
                     $response['ingredientId'] = $_GET['ingredientId'];
                     echo json_encode($response);
-                }
+                }});
                 break;
         }
     }

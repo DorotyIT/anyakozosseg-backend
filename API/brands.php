@@ -1,12 +1,13 @@
 <?php
     require("../connection.php");
+    require("auth.php");
 
     function getOptionFromBoolean(bool $isTrue): array {
         return ['id' => $isTrue ? 1 : 0, 'name' => $isTrue];
     }
 
-     $request_vars = array();
- 
+    $request_vars = array();
+  
      if (isset($_SERVER['REQUEST_METHOD']))
      {
        switch ($_SERVER['REQUEST_METHOD'])
@@ -93,10 +94,10 @@
                 break;
                 
             case 'POST': 
-                {
+                doIfHasAdminRole(function() use ($connection) {
                     $body = json_decode(file_get_contents('php://input'), true);
                     
-                    $name = mysqli_real_escape_string($connection, $body['name']);
+                    $name = $body['name'];
                     $isCrueltyFree = $body['isCrueltyFree']['id'];
                     $isVegan = $body['isVegan']['id'];
                     $overallRating = $body['overallRating'];
@@ -119,15 +120,15 @@
 
                     $response['brandId'] = $brandId;
                     echo json_encode($response);
-                }
+                });
                 break;
 
-                case 'PUT': {
-
+            case 'PUT': 
+                doIfHasAdminRole(function() use ($connection) {
                     $body = json_decode(file_get_contents('php://input'), true);
                     
                     $id = $body['id'];
-                    $name = mysqli_real_escape_string($connection, $body['name']);
+                    $name = $body['name'];
                     $isCrueltyFree = $body['isCrueltyFree']['id'];
                     $isVegan = $body['isVegan']['id'];
                     $overallRating = $body['overallRating'];
@@ -154,24 +155,26 @@
                     $response['brandId'] = $id;
                     
                     echo json_encode($response);
-                }
+                });
                 break;
    
             case 'DELETE':
-                if (isset($_GET['brandId'])) {
-                    $brandId = $_GET['brandId'];
-                    $deleteBrand = "DELETE 
-                                    FROM `brands` 
-                                    WHERE `id` ='{$brandId}' LIMIT 1";
+                doIfHasAdminRole(function() use ($connection) {
+                    if (isset($_GET['brandId'])) {
+                        $brandId = $_GET['brandId'];
+                        $deleteBrand = "DELETE 
+                                        FROM `brands` 
+                                        WHERE `id` ='{$brandId}' LIMIT 1";
 
-                    mysqli_query($connection, $deleteBrand);
-                    $response['brandId'] = $_GET['brandId'];
-                    echo json_encode($response);
-                }
+                        mysqli_query($connection, $deleteBrand);
+                        $response['brandId'] = $_GET['brandId'];
+                        echo json_encode($response);
+                    }
+                });
                 break;
+            
         }
     }
-    
 ?>
 
 
