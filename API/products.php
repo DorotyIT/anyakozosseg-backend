@@ -2,8 +2,6 @@
     require("../connection.php");
     require("auth.php");
 
-    session_start();
-
      if (isset($_SERVER['REQUEST_METHOD']))
      {
        switch ($_SERVER['REQUEST_METHOD'])
