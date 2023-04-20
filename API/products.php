@@ -2,8 +2,8 @@
     require("../connection.php");
     require("auth.php");
 
-    if (isset($_SERVER['REQUEST_METHOD']))
-    {
+     if (isset($_SERVER['REQUEST_METHOD']))
+     {
        switch ($_SERVER['REQUEST_METHOD'])
        {
             case 'GET' : 
@@ -72,6 +72,8 @@
                         } 
 
                         echo json_encode($products);
+
+                    // Fetch product by ID 
                     } elseif (isset($_GET['productId'])) {
                         $productId = $_GET['productId'];
                         $sqlGetProduct = "SELECT *
@@ -154,10 +156,30 @@
                                 }
                                 $i++;
                             }
-                            echo json_encode($product);    
-                        } else {
+
+                            // Fetch logged in users rating for the product
+                            $product['loggedInUsersRating'] = null;
+                            if (isset($_SESSION['userId'])) {
+                                $loggedInUserId = $_SESSION['userId'];
+                                $sqlLoggedInUsersRating = "SELECT ratings.rating, ratings.comment, ratings.id as rating_id 
+                                                           FROM `ratings` 
+                                                           JOIN users ON ratings.user_id = users.id  
+                                                           WHERE product_id={$productId} AND users.id={$loggedInUserId}";
+
+                                $result = mysqli_query($connection, $sqlLoggedInUsersRating);
+                                if(mysqli_num_rows($result) > 0) {
+                                    $rating = mysqli_fetch_assoc($result);
+                                    // $product['loggedInUsersRating'] = $rating;
+                                    $product['loggedInUsersRating']['rating'] = $rating['rating'];
+                                    $product['loggedInUsersRating']['comment'] = $rating['comment'];
+                                    $product['loggedInUsersRating']['id'] = $rating['rating_id'];
+                                }
+                            }
+
+                            echo json_encode($product);  
+                        }  else {
                             echo json_encode("No product with id: {$productId} was found.");
-                        } 
+                        }
                     }
                 }
                 break;
