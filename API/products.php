@@ -2,6 +2,8 @@
     require("../connection.php");
     require("auth.php");
 
+    session_start();
+
      if (isset($_SERVER['REQUEST_METHOD']))
      {
        switch ($_SERVER['REQUEST_METHOD'])
@@ -169,7 +171,6 @@
                                 $result = mysqli_query($connection, $sqlLoggedInUsersRating);
                                 if(mysqli_num_rows($result) > 0) {
                                     $rating = mysqli_fetch_assoc($result);
-                                    // $product['loggedInUsersRating'] = $rating;
                                     $product['loggedInUsersRating']['rating'] = $rating['rating'];
                                     $product['loggedInUsersRating']['comment'] = $rating['comment'];
                                     $product['loggedInUsersRating']['id'] = $rating['rating_id'];
