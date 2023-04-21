@@ -1,7 +1,6 @@
 <?php
 
 function doIfLoggedIn($callback) {
-    session_start();
     if (isset($_SESSION['userId'])) {
         $callback();
     } else {
@@ -14,7 +13,6 @@ function doIfLoggedIn($callback) {
 }
 
 function doIfHasAdminRole($callback) {
-    session_start();
     if (isset($_SESSION['userId']) && $_SESSION['role'] === "admin") {
         $callback();
     } else {

@@ -2,6 +2,8 @@
     require("../connection.php");
     require("auth.php");
 
+    session_start();
+
     function getOptionFromBoolean(bool $isTrue): array {
         return ['id' => $isTrue ? 1 : 0, 'name' => $isTrue];
     }
