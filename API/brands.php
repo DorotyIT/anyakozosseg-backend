@@ -120,7 +120,7 @@
                     
                     mysqli_query($connection, $insertIntoCategoriesToBrands);
 
-                    $response['brandId'] = $brandId;
+                    $response = $brandId;
                     echo json_encode($response);
                 });
                 break;
@@ -154,7 +154,7 @@
                     
                     mysqli_query($connection, $updateCategoriesToBrands);
 
-                    $response['brandId'] = $id;
+                    $response = $id;
                     
                     echo json_encode($response);
                 });
@@ -169,7 +169,7 @@
                                         WHERE `id` ='{$brandId}' LIMIT 1";
 
                         mysqli_query($connection, $deleteBrand);
-                        $response['brandId'] = $_GET['brandId'];
+                        $response = $_GET['brandId'];
                         echo json_encode($response);
                     }
                 });
