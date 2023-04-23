@@ -7,8 +7,6 @@
     function getOptionFromBoolean(bool $isTrue): array {
         return ['id' => $isTrue ? 1 : 0, 'name' => $isTrue];
     }
-
-     $request_vars = array();
  
      if (isset($_SERVER['REQUEST_METHOD']))
      {
@@ -174,7 +172,7 @@
                         mysqli_query($connection, $sqlInsertIngredientFunction);
                     }
                 
-                    $response['ingredientId'] = $ingredientId;
+                    $response = $ingredientId;
                     echo json_encode($response);
                 });
                 break;
@@ -225,7 +223,7 @@
                         mysqli_query($connection, $sqlInsertIngredientFunction);
                     }
                 
-                    $response['ingredientId'] = $ingredientId;
+                    $response = $ingredientId;
                     echo json_encode($response);
                 });
                 break;
@@ -239,7 +237,7 @@
                                          WHERE `id` = '{$ingredientId}'";
 
                     mysqli_query($connection, $deleteingredient);
-                    $response['ingredientId'] = $_GET['ingredientId'];
+                    $response = $_GET['ingredientId'];
                     echo json_encode($response);
                 }});
                 break;
