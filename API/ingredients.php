@@ -80,7 +80,7 @@
                         $ingredient['functions'] = mysqli_fetch_all($ingredientFunctionResult, MYSQLI_ASSOC);
 
                         // Fetch products that contain the ingredient
-                        $sqlGetIncludedInProducts = "SELECT id, name FROM products
+                        $sqlGetIncludedInProducts = "SELECT * FROM products
                                                      JOIN products_to_ingredients ON products_to_ingredients.product_id = products.id
                                                      WHERE products_to_ingredients.ingredient_id = '{$ingredientId}'";
                         $includedInProductsResult = mysqli_query($connection, $sqlGetIncludedInProducts);
