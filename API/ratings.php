@@ -23,7 +23,8 @@
                     mysqli_query($connection, $insertIntoRatings);
 
                     $ratingId = mysqli_insert_id($connection);
-                    $response['ratingId'] = $ratingId;
+                    
+                    $response = "Rating added successfully";
 
                     echo json_encode($response);
                 });
@@ -42,7 +43,7 @@
                                      WHERE user_id = '{$userId}'";
                     mysqli_query($connection, $updateRating);
 
-                    $response['message'] = "Rating updated successfully";
+                    $response = "Rating updated successfully";
 
                     echo json_encode($response);
                 });
